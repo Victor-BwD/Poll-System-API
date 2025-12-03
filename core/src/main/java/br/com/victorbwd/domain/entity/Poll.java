@@ -13,4 +13,5 @@ public class Poll {
     private String title;
     private LocalDateTime createdAt;
     private LocalDateTime expiresAt;
+    private List<Option> options;
 }
