@@ -1,0 +1,81 @@
+# Versão do Docker Compose. A 3.8 é uma versão moderna e estável.
+version: '3.8'
+
+# 'services' é onde definimos cada contêiner que queremos rodar.
+services:
+  # --- Banco de Dados Relacional: PostgreSQL ---
+  postgres:
+    image: postgres:16-alpine  # Imagem oficial do PostgreSQL, versão 16 (leve, com 'alpine').
+    container_name: poll-postgres
+    environment:
+      # Define as variáveis de ambiente para o contêiner do Postgres.
+      POSTGRES_USER: postgres          # O usuário que será criado.
+      POSTGRES_PASSWORD: admin         # A senha para este usuário.
+      POSTGRES_DB: poll_db             # O nome do banco de dados que será criado na inicialização.
+    ports:
+      # Mapeia a porta 5432 do contêiner para a porta 5432 da sua máquina.
+      # Formato: <porta-na-sua-maquina>:<porta-no-conteiner>
+      - "5432:5432"
+    volumes:
+      # (Opcional, mas recomendado) Garante que os dados do Postgres persistam mesmo se o contêiner for removido.
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - poll-network # Conecta este serviço à nossa rede customizada.
+
+  # --- Banco de Dados NoSQL: MongoDB ---
+  mongo:
+    image: mongo:7.0 # Imagem oficial do MongoDB.
+    container_name: poll-mongo
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+    networks:
+      - poll-network
+
+  # --- Cache em Memória: Redis ---
+  redis:
+    image: redis:7-alpine # Imagem oficial do Redis (versão alpine é mais leve).
+    container_name: poll-redis
+    ports:
+      - "6379:6379"
+    networks:
+      - poll-network
+
+  # --- Mensageria (Pub/Sub): Kafka ---
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.5.0 # O Kafka depende do Zookeeper para gerenciar seu estado.
+    container_name: poll-zookeeper
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    networks:
+      - poll-network
+
+  kafka:
+    image: confluentinc/cp-kafka:7.5.0 # Imagem do Kafka da Confluent, uma referência no mercado.
+    container_name: poll-kafka
+    depends_on:
+      - zookeeper # Garante que o Zookeeper inicie antes do Kafka.
+    ports:
+      - "9092:9092" # Porta para a aplicação se conectar.
+      - "9094:9094" # Porta para comunicação interna do Kafka.
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: 'zookeeper:2181' # Conecta o Kafka ao Zookeeper (usando o nome do serviço).
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092,PLAINTEXT_HOST://localhost:9094
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+    networks:
+      - poll-network
+
+# 'volumes' é onde o Docker gerencia os dados persistentes.
+volumes:
+  postgres_data:
+  mongo_data:
+
+# 'networks' permite que os contêineres se comuniquem uns com os outros usando seus nomes de serviço.
+networks:
+  poll-network:
+    driver: bridge
