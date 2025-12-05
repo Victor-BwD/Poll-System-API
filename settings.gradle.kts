@@ -1,9 +1,9 @@
 rootProject.name = "poll-system"
 
 include("app")
-include("dataprovider")
-include("entrypoint")
-include("core")
+include("infrastructure")
+include("controller")
+include("domain")
 
-include("dataprovider")
-include("entrypoint")
+include("infrastructure")
+include("controller")

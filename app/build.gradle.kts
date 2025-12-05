@@ -1,8 +1,8 @@
 dependencies {
     // O 'app' depende de todos os outros módulos para conectar tudo
-    implementation(project(":core"))
-    implementation(project(":entrypoint"))
-    implementation(project(":dataprovider"))
+    implementation(project(":domain"))
+    implementation(project(":controller"))
+    implementation(project(":infrastructure"))
 
     // Dependência básica do Spring Boot
     implementation("org.springframework.boot:spring-boot-starter")
