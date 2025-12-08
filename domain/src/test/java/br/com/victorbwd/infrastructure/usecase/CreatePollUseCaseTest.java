@@ -1,4 +1,4 @@
-package br.com.victorbwd.domain.usecase;
+package br.com.victorbwd.infrastructure.usecase;
 
 import br.com.victorbwd.domain.repository.PollRepository;
 import br.com.victorbwd.domain.usecases.CreatePollUseCase;
