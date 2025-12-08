@@ -7,6 +7,9 @@ dependencies {
 
     implementation("org.springframework.boot:spring-boot-starter-data-mongodb")
 
+    implementation("org.mapstruct:mapstruct:1.6.3")
+    annotationProcessor("org.mapstruct:mapstruct-processor:1.6.3")
+
 
     // Lombok
     compileOnly("org.projectlombok:lombok")
