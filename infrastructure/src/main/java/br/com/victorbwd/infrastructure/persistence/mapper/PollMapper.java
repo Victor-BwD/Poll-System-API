@@ -5,9 +5,8 @@ import br.com.victorbwd.infrastructure.persistence.document.PollDocument;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", uses = {OptionMapper.class})
 public interface PollMapper {
-    PollMapper INSTANCE = Mappers.getMapper(PollMapper.class);
 
     Poll toDomain(PollDocument document);
 

@@ -1,3 +1,9 @@
+plugins {
+    // Mais controle do Lombok
+    id("io.freefair.lombok") version "9.1.0"
+}
+
+
 dependencies {
     // Depende do módulo 'core' para acessar as interfaces dos casos de uso
     implementation(project(":domain"))
